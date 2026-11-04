@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>The Courtesy Book – Chapter Quizzes</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#faf6ee;--card:#fff;--tx:#2b2a28;--mut:#6b675f;--ac:#7a2e3a;--acx:#fff;--ok:#1f7a45;--bad:#b3261e;--bd:#e2dccd;color-scheme:light}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1d1b18;--card:#292622;--tx:#f1ece2;--mut:#b2ab9d;--ac:#e4a0ac;--acx:#2b1a1e;--ok:#6fd39a;--bad:#ff9a90;--bd:#3f3a33;color-scheme:dark}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:17px/1.5 Georgia,"Times New Roman",serif}
+main{max-width:720px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:1.7rem;margin:.2em 0}h2{font-size:1.2rem;margin:.2em 0 .8em}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:18px;margin:14px 0}
+label{display:block;font-weight:bold;margin:10px 0 4px}
+input,select,textarea{width:100%;padding:10px;font:inherit;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx)}
+button{font:inherit;padding:10px 18px;border-radius:8px;border:1px solid var(--ac);background:var(--ac);color:var(--acx);cursor:pointer;margin:8px 8px 0 0}
+button.alt{background:transparent;color:var(--ac)}button:disabled{opacity:.45;cursor:not-allowed}
+.opt{display:block;width:100%;text-align:left;background:var(--bg);color:var(--tx);border:1px solid var(--bd);margin:8px 0}
+.opt.sel{border:2px solid var(--ac);background:var(--card)}
+.mut{color:var(--mut);font-size:.9rem}.ok{color:var(--ok)}.bad{color:var(--bad)}
+.bar{height:6px;background:var(--bd);border-radius:4px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac)}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:20}
+#modal div{background:var(--card);border-radius:12px;padding:22px;max-width:420px}
+.hide{display:none}
+</style></head><body><main>
+<h1>📖 The Courtesy Book</h1><div class="mut">Chapter quizzes · Sound Detective activity</div>
+<div id="app"></div></main>
+<div id="modal"><div><h2 id="mt"></h2><p id="mb"></p><button onclick="modal.style.display='none'">OK</button></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+// [chapter, [[question,[options],answerIndex],...], sentence prompt]
+const C=[
+["A Gentleman",[["In the poem, how can you recognize a gentleman?",["By his fine clothes","By small kind actions like helping and holding doors","By his loud voice"],1],["The poem says a gentleman’s manners are the same…",["Only at home","At ten and at forty","Only in company"],1]],"Write a sentence about a kind thing a gentleman or lady does."],
+["True Courtesy",[["True courtesy is…",["Putting on very fancy manners","Real kindness kindly expressed","Talking as much as possible"],1],["Before entering a room with a closed door, you should…",["Knock and wait for permission","Walk right in","Call out loudly"],0]],"Write a sentence about how you can be thoughtful to an older person."],
+["Courtesy in Conversation",[["A polite person speaks in…",["A high, fast voice","A harsh tone","Medium tones"],2],["A polite person listens to others at least…",["Never","Half of the time","Once a day"],1]],"Write a sentence using the word “polite” about how to talk to others."],
+["Family Courtesy",[["Family courtesy is…",["Doing whatever saves others trouble","Wearing your best clothes daily","Staying silent at home"],0],["A good test is to ask if you treat your family like…",["Strangers","Company","Servants"],1]],"Write a sentence about one way you help your family."],
+["Good Table Manners",[["If you have a cold at the table, you should…",["Blow your nose loudly","Ask to be excused and leave the table","Ignore it"],1],["Well-bred people at the table sit…",["With elbows on the table","Leaning back lazily","In an easy, upright position"],2]],"Write a sentence about good manners at dinner."],
+["Courtesy in an Audience",[["Why did Paderewski stop playing?",["The piano broke","People came in late during his piece","Someone clapped"],1],["Which spoils an audience’s enjoyment?",["Whispering or rattling a program","Listening quietly","Entering between numbers"],0]],"Write a sentence about how to behave at a concert or play."],
+["Manners on the Street Car",[["A boy should…",["Stay seated","Give his seat to girls, women and elderly men","Take the window seat"],1],["If someone drops something, you should…",["Laugh","Ignore it","Pick it up quickly and return it"],2]],"Write a sentence about how to behave on a bus or train."],
+["Courtesy in the Schoolroom",[["“When in Rome, do as the Romans do” means…",["Travel to Rome","Behave as expected in each place","Copy everyone"],1],["Which is the polite way to speak to a teacher?",["“Say, Teacher, may I be excused?”","“Miss Smith, may I be excused?”","Just leave"],1]],"Write a sentence about being polite in the classroom."],
+["Telephone Courtesy",[["People show their real selves most…",["At church","At school","When using the telephone"],2],["If you call a wrong number, you should…",["Hang up quickly","Say you are sorry to have troubled them","Blame the other person"],1]],"Write a sentence showing how to answer the telephone politely."],
+["Real Courtesy Instead of “Put On” Manners",[["“Company manners” means being polite…",["Only in company, forgetting at home","Everywhere","Only at school"],0],["Family quarrels are often caused by…",["Too much company","Dropping “company manners” at home","Too many rules"],1]],"Write a sentence about using “please” and “thank you” at home."],
+["Business Courtesy",[["Business courtesy means being pleasant and…",["As brief as possible","As talkative as possible","Very formal"],0],["Chatting with a friend who is working as a clerk is…",["Helpful","Always welcome","Unfair, because it takes their time"],2]],"Write a sentence about respecting someone’s time."],
+["Curiosity and Courtesy",[["Which is impolite to ask?",["About the weather","About a person’s age or money","About a book"],1],["If people want us to know something, they will…",["Hide it","Tell us without our asking","Write it down"],1]],"Write a sentence about a question that would be polite to ask."],
+["Good Taste in Dress",[["Good taste in dress means…",["Wearing the most expensive clothes","Being suitably dressed for the occasion","Wearing party clothes daily"],1],["For school or work, it is best to wear…",["Plain clothes that wear well","Fancy silk dresses","Bright clothes to be noticed"],0]],"Write a sentence about what to wear to school."],
+["The Boaster",[["A boaster is someone who…",["Tells things to show off","Is modest","Listens well"],0],["Modesty keeps truly great people from…",["Working hard","Speaking at all","Mentioning what they have done"],2]],"Write a sentence about why modesty is better than bragging."],
+["The Way to Do Favors",[["When asked to do a favor, you should…",["Act pleased to do it","Frown but do it","Refuse"],0],["When someone is sick or sad, it is kind to say…",["“Cheer up!”","Nothing at all","“Let me know if there is anything I can do.”"],2]],"Write a sentence about a favor you can do at home."],
+["Courtesy to Guests",[["A host should offer guests…",["Leftovers","The best of what they have","Nothing until asked"],1],["In warm weather, it is thoughtful to offer a guest…",["A glass of water","A heavy meal","A blanket"],0]],"Write a sentence about how to welcome a guest."],
+["Courtesy in Visiting",[["A polite guest arrives…",["Early","Exactly at the invited time","Late"],1],["Being a “good sport” means being…",["Always the winner","Good-natured when beaten","Silent during games"],1]],"Write a sentence about thanking a host."],
+["Giving Invitations",[["The most important thing to include is…",["The time (date and hour)","What to wear","Gift ideas"],0],["A formal invitation is given…",["The same day","At least two weeks ahead","Only by telephone"],1]],"Write a sentence inviting a friend to a party."],
+["Replying to Invitations",[["R.S.V.P. means…",["Remember to send presents","Return soon, very promptly","Reply, if you please"],2],["Why give a clear yes or no?",["To be formal","The host needs to know whether to expect you","To change your mind later"],1]],"Write a sentence replying politely to an invitation."],
+["Directing People Courteously",[["Lincoln said a man has no more right to say a rude thing than to…",["Knock a man down","Run away","Tell a story"],0],["When asked for directions, you should…",["Guess quickly","Give careful, exact directions","Say you are too busy"],1]],"Write a sentence giving directions to a stranger."],
+["Courtesy in Shopping",[["If you do not like what a clerk shows you, say…",["“I don’t like that!”","“That isn’t just what I’m looking for. Have you something else?”","Nothing; walk away"],1],["Wasting a clerk’s time is unfair because…",["Clerks are usually paid by the sales they make","Stores are small","Clerks are slow"],0]],"Write a sentence about thanking a helpful clerk."],
+["About Apologies",[["An apology is…",["Explaining what you did and asking to be excused","Blaming someone else","Giving a gift"],0],["If you bump into someone by accident, you should…",["Say nothing","Apologize at once","Hurry away"],1]],"Write a sentence making an apology."],
+["The Courtesy of Cheerfulness",[["Courtesy is making other people…",["Jealous","Busy","Comfortable"],2],["Scowling when you are displeased shows you are…",["Strong","Impolite","Honest"],1]],"Write a sentence about a way to be cheerful."],
+["Little Everyday Courtesies",[["Little courtesies matter because…",["It is the little things that make up life","They are expensive","They are only for strangers"],0],["Elderly people should never be called…",["“Sir” or “Madam”","“Mr.” or “Mrs.”","“That old man” or “that old woman”"],2]],"Write a sentence about helping an older person."],
+["The Courtesy of Punctuality",[["Punctuality means…",["Being on time","Being polite","Being quick"],0],["Punctuality is a form of…",["Fashion","Speed","Honesty"],2]],"Write a sentence about why being on time is polite."]
+];
+const $=id=>document.getElementById(id),app=$("app"),modal=$("modal");
+let S={},warned=false,inAttempt=false;
+const today=()=>new Date().toISOString().slice(0,10);
+function popup(t,b){$("mt").textContent=t;$("mb").textContent=b;modal.style.display="flex"}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+
+function home(){inAttempt=false;
+app.innerHTML=`<div class="card"><h2>Student details</h2>
+<label>Name</label><input id="nm" autocomplete="name"><label>Class</label><input id="cl">
+<label>Date</label><input id="dt" type="date" value="${today()}">
+<label>Chapter</label><select id="ch">${C.map((c,i)=>`<option value="${i}">Chapter ${i+1}: ${esc(c[0])}</option>`).join("")}</select>
+<p class="mut">⚠️ Stay on this tab. If you leave it once you get a warning. If you leave a second time, the activity resets.</p>
+<button onclick="start()">Start quiz</button></div>`}
+function start(){const nm=$("nm").value.trim(),cl=$("cl").value.trim(),dt=$("dt").value;
+if(!nm||!cl||!dt)return popup("Missing details","Please enter your name, class and date.");
+S={nm,cl,dt,ch:+$("ch").value,i:0,a:[],s:""};warned=false;inAttempt=true;render()}
+function render(){const c=C[S.ch],n=c[1].length,i=S.i;
+let h=`<div class="mut">Chapter ${S.ch+1}: ${esc(c[0])} · ${esc(S.nm)}</div><div class="bar"><i style="width:${i/(n+1)*100}%"></i></div><div class="card">`;
+if(i<n){const q=c[1][i];h+=`<h2>Question ${i+1} of ${n}</h2><p>${esc(q[0])}</p>`+q[1].map((o,j)=>`<button class="opt ${S.a[i]===j?"sel":""}" onclick="pick(${j})">${esc(o)}</button>`).join("")+
+`<button ${S.a[i]==null?"disabled":""} onclick="S.i++;render()">Next</button>`}
+else{h+=`<h2>Write a sentence</h2><p>${esc(c[2])}</p><textarea id="sn" rows="4" oninput="S.s=this.value;$('fin').disabled=S.s.trim().split(/\s+/).length<4">${esc(S.s)}</textarea><p class="mut">Use at least 4 words.</p><button id="fin" ${S.s.trim().split(/\s+/).length<4?"disabled":""} onclick="finish()">Finish</button>`}
+app.innerHTML=h+"</div>"}
+function pick(j){S.a[S.i]=j;render()}
+function score(){return C[S.ch][1].reduce((t,q,i)=>t+(S.a[i]===q[2]),0)}
+function finish(){inAttempt=false;const c=C[S.ch];
+app.innerHTML=`<div class="card"><h2>Final review</h2><p><b>Name:</b> ${esc(S.nm)}<br><b>Class:</b> ${esc(S.cl)}<br><b>Date:</b> ${esc(S.dt)}<br><b>Chapter ${S.ch+1}:</b> ${esc(c[0])}</p><p><b>Score: ${score()} / ${c[1].length}</b></p></div>`+
+c[1].map((q,i)=>{const ok=S.a[i]===q[2];return `<div class="card"><b>Q${i+1}. ${esc(q[0])}</b><p>Your answer: <span class="${ok?"ok":"bad"}">${esc(q[1][S.a[i]])} ${ok?"✓":"✗"}</span></p>${ok?"":`<p>Correct answer: <span class="ok">${esc(q[1][q[2]])}</span></p>`}</div>`}).join("")+
+`<div class="card"><b>Sentence: ${esc(c[2])}</b><p>${esc(S.s)}</p></div><button onclick="pdf()">⬇ Download PDF</button><button class="alt" onclick="home()">Back to chapters</button><p class="mut">Download the PDF, then attach it to your assignment in Google Classroom.</p>`}
+function pdf(){const J=window.jspdf;if(!J)return popup("PDF unavailable","The PDF tool did not load. Check your connection and try again.");
+const d=new J.jsPDF(),c=C[S.ch];let y=18;
+const w=(t,sz=11,b=false)=>{d.setFont("helvetica",b?"bold":"normal");d.setFontSize(sz);d.splitTextToSize(String(t).replace(/[’‘]/g,"'").replace(/[“”]/g,'"'),175).forEach(l=>{if(y>280){d.addPage();y=18}d.text(l,18,y);y+=sz*.5+2})};
+w("The Courtesy Book - Chapter Quiz",16,true);y+=2;w("Name: "+S.nm);w("Class: "+S.cl);w("Date: "+S.dt);w(`Chapter ${S.ch+1}: ${c[0]}`,11,true);w(`Score: ${score()} / ${c[1].length}`,11,true);y+=4;
+c[1].forEach((q,i)=>{w(`Q${i+1}. ${q[0]}`,11,true);w("Your answer: "+q[1][S.a[i]]+(S.a[i]===q[2]?"  (correct)":"  (incorrect)"));if(S.a[i]!==q[2])w("Correct answer: "+q[1][q[2]]);y+=3});
+w("Sentence: "+c[2],11,true);w(S.s);
+d.save(`Courtesy-Ch${S.ch+1}-${S.nm.replace(/\W+/g,"_")}.pdf`)}
+
+// Tab-switch rule: 1st exit = warning, 2nd exit in same attempt = reset
+let pend=null;
+document.addEventListener("visibilitychange",()=>{
+if(document.hidden){if(!inAttempt)return;if(!warned){warned=true;pend=["warn"]}else{pend=["reset"]}}
+else if(pend){const p=pend[0];pend=null;
+if(p==="warn")popup("⚠️ Warning","You left the Sound Detective tab. If you leave it again, your activity will reset.");
+else{const k={nm:S.nm,cl:S.cl,dt:S.dt,ch:S.ch};S={...k,i:0,a:[],s:""};warned=false;render();popup("Activity reset","You left the tab a second time, so the activity has been reset. Please start again and stay on this tab.")}}});
+home();
+</script></body></html>
