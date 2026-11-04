@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#182b3a">
-  <meta name="description" content="Explore interactive learning games. Think, play and challenge yourself.">
+  <meta name="description" content="Explore interactive learning games and challenges.">
   <title>The Game Hub | Interactive Learning Games</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,7 +21,7 @@
 
     :root {
       --navy: #182b3a;
-      --navy-light: #263f50;
+      --navy-light: #29475a;
       --cream: #f7f6f1;
       --gold: #d6ad65;
       --text: #263541;
@@ -62,7 +62,7 @@
     }
 
     .hero {
-      background: linear-gradient(135deg, #182b3a, #29475a);
+      background: linear-gradient(135deg, var(--navy), var(--navy-light));
       color: white;
       padding: 90px 20px 100px;
       text-align: center;
@@ -177,7 +177,7 @@
     .game-content p {
       color: var(--muted);
       font-size: 0.93rem;
-      min-height: 54px;
+      min-height: 78px;
       margin-bottom: 22px;
     }
 
@@ -201,7 +201,7 @@
       border: 1px dashed #c9c5b9;
       background: rgba(255,255,255,0.45);
       border-radius: 16px;
-      min-height: 320px;
+      min-height: 350px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -300,6 +300,7 @@
 
       <div class="game-grid">
 
+        <!-- GAME 1: ODD ONE OUT -->
         <article class="game-card">
           <div class="game-art">🧩</div>
           <div class="game-content">
@@ -310,6 +311,18 @@
           </div>
         </article>
 
+        <!-- GAME 2: THE COURTESY BOOK -->
+        <article class="game-card">
+          <div class="game-art">📚</div>
+          <div class="game-content">
+            <div class="category">Literature · Reading Comprehension</div>
+            <h3>The Courtesy Book – Chapter Quizzes</h3>
+            <p>Test your understanding of the book through interactive chapter quizzes and knowledge challenges.</p>
+            <a class="play-button" href="The%20Courtesy%20Book%20%E2%80%93%20Chapter%20Quizzes.html">Start Quizzes →</a>
+          </div>
+        </article>
+
+        <!-- FUTURE GAMES -->
         <div class="coming-card">
           <div class="coming-icon">🎯</div>
           <h3>More Challenges Coming</h3>
